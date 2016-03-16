@@ -4,7 +4,6 @@
  */
 
 #include "nio4r.h"
-#include "../libev/ev.c"
 
 void Init_NIO_Selector();
 void Init_NIO_Monitor();
