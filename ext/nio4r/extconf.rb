@@ -1,6 +1,7 @@
 require "mkmf"
 
 have_header("unistd.h")
+have_library("ev")
 
 if have_func("rb_thread_blocking_region")
   $defs << "-DHAVE_RB_THREAD_BLOCKING_REGION"
