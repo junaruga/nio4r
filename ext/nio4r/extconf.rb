@@ -1,7 +1,6 @@
 require "mkmf"
 
 have_header("unistd.h")
-have_library("ev")
 
 if have_func("rb_thread_blocking_region")
   $defs << "-DHAVE_RB_THREAD_BLOCKING_REGION"
@@ -26,6 +25,10 @@ $defs << "-DEV_USE_PORT" if have_header("port.h")
 $defs << "-DHAVE_SYS_RESOURCE_H" if have_header("sys/resource.h")
 
 $defs << "-DHAVE_RUBYSIG_H" if RUBY_VERSION.to_f < 1.9
+
+if find_header("ev.h") && find_library("ev", nil)
+  $defs << "-DHAVE_EV_H"
+end
 
 dir_config "nio4r_ext"
 create_makefile "nio4r_ext"

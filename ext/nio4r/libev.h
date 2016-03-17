@@ -6,4 +6,9 @@
 #define EV_USE_REALTIME 0
 #endif
 
-#include "ev.h"
+/* If there is a system libev, use it. Otherwise use bundled libev. */
+#ifdef HAVE_EV_H
+# include "ev.h"
+#else
+# include "../libev/ev.h"
+#endif
