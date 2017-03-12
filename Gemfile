@@ -13,6 +13,7 @@ end
 
 group :development, :test do
   gem "coveralls",         require: false
+  gem "mini_portile2", "~>2.1.0", require: false
   gem "rake-compiler",     require: false
   gem "rspec", "~> 3",     require: false
   gem "rspec-retry",       require: false
