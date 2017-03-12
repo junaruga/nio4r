@@ -1,5 +1,12 @@
 # frozen_string_literal: true
 
+ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+LIVEV = {
+  name: "libev",
+  version: "4.23",
+  sha256: "c7fe743e0c3b50dd34bf222ebdba4e8acac031d41ce174f17890f8f84eeddd7a",
+}
+
 if defined? JRUBY_VERSION
   require "rake/javaextensiontask"
   Rake::JavaExtensionTask.new("nio4r_ext") do |ext|
@@ -16,11 +23,18 @@ else
   end
 end
 
-LIVEV = {
-  name: "libev",
-  version: "4.23",
-  sha256: "c7fe743e0c3b50dd34bf222ebdba4e8acac031d41ce174f17890f8f84eeddd7a",
-}
+class MiniPortile
+  # See https://github.com/flavorjones/mini_portile/blob/v2.1.0/
+  def apply_patch(patch_file)
+    (
+      lambda { |file|
+        message "Running patch with #{file}... "
+        execute('patch', ["patch", "-p1", "-i", file],
+          :initial_message => false)
+      }
+    ).call(patch_file)
+  end
+end
 
 desc "Download and extract libev"
 task :libev do
@@ -32,15 +46,18 @@ task :libev do
     url: url,
     sha256: LIVEV[:sha256]
   }
-  checkpoint = ".#{recipe.name}-#{recipe.version}.installed"
+  recipe.patch_files =
+    Dir[File.join(ROOT, "patches", recipe.name, "*.patch")].sort
 
-  unless File.exist?(checkpoint)
-    recipe.download
-    recipe.extract
-    touch checkpoint
-  end
+  #patch_file = File.join(ROOT, "patches", LIVEV[:name], "nio4r.patch")
+
+  recipe.download
+  recipe.extract
+  recipe.patch
+  #`cat #{patch_file} | patch -p1 -F 0`
+  #unless $?.to_i
+  #  throw RuntimeError("Failed patch: #{patch_cmd}")
+  #end
 
   # recipe.activate
-
-  # recipe.patch_files = Dir[File.join(ROOT, "patches", name, "*.patch")].sort
 end
